@@ -1,15 +1,18 @@
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from app.config import GEMINI_API_KEY
+from langchain_huggingface import HuggingFaceEmbeddings
+
+# Default local embedding model for semantic search
+EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 def get_embedding_model(
-    model_name: str = "models/embedding-001"
-) -> GoogleGenerativeAIEmbeddings:
+    model_name: str = EMBEDDING_MODEL_NAME,
+) -> HuggingFaceEmbeddings:
     """
-    Returns a Gemini embedding model for semantic retrieval.
+    Returns a local HuggingFace embedding model for semantic retrieval.
+
+    This uses all-MiniLM-L6-v2:
+    - 384-dimensional embeddings
+    - Fast and light, good for clause-level similarity
+    - Runs locally (no external API calls)
     """
-    return GoogleGenerativeAIEmbeddings(
-        model=model_name,
-        google_api_key=GEMINI_API_KEY,
-        task_type="retrieval_document"
-    )
+    return HuggingFaceEmbeddings(model_name=model_name)
