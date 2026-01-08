@@ -23,6 +23,7 @@ from processing.chunker import chunk_document
 from processing.batch_classifier import classify_clauses_batch
 from processing.batch_simplifier import simplify_clauses_batch
 from processing.batch_risk_analyzer import analyze_risks_batch
+from processing.batch_multi_analyzer import analyze_clauses_batch
 from processing.aggregator import aggregate_document
 from processing.answer_synthesizer import synthesize_answer
 
@@ -84,10 +85,40 @@ if uploaded_file and st.button("Analyze Document") and not st.session_state.proc
         # ---- Chunk ----
         clauses = chunk_document(cleaned_text)
 
-        # ---- Batched LLM processing ----
-        classification_map = classify_clauses_batch(clauses)
-        simplification_map = simplify_clauses_batch(clauses)
-        risk_map = analyze_risks_batch(clauses)
+        # ---- Batched LLM processing (single-shot with cache) ----
+        multi_map = {}
+        try:
+            multi_map = analyze_clauses_batch(clauses)
+        except Exception as e:
+            st.warning(f"Combined batch failed, falling back. Reason: {e}")
+            classification_map = classify_clauses_batch(clauses)
+            simplification_map = simplify_clauses_batch(clauses)
+            risk_map = analyze_risks_batch(clauses)
+        else:
+            classification_map = {
+                cid: {
+                    "categories": data.get("categories", ["general"]),
+                    "confidence": data.get("confidence", 0.0),
+                }
+                for cid, data in multi_map.items()
+            }
+            simplification_map = {
+                cid: {
+                    "simple_explanation": data.get("simple_explanation", ""),
+                    "user_impact": data.get("user_impact", ""),
+                    "key_points": data.get("key_points", []),
+                }
+                for cid, data in multi_map.items()
+            }
+            risk_map = {
+                cid: {
+                    "risk_level": data.get("risk_level", "low"),
+                    "risk_types": data.get("risk_types", []),
+                    "risk_summary": data.get("risk_summary", ""),
+                    "red_flags": data.get("red_flags", []),
+                }
+                for cid, data in multi_map.items()
+            }
 
         # ---- Attach results safely ----
         for clause in clauses:
