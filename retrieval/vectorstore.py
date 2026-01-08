@@ -1,14 +1,16 @@
 from typing import List, Dict
-from langchain.vectorstores import FAISS
-from langchain.schema import Document
+from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
 
 from retrieval.embeddings import get_embedding_model
+from utils.cache_utils import (
+    compute_text_hash,
+    get_cached_result,
+    set_cached_result
+)
 
 
 def build_documents(clauses: List[Dict]) -> List[Document]:
-    """
-    Convert clause chunks into LangChain Document objects.
-    """
     documents = []
 
     for clause in clauses:
@@ -16,13 +18,13 @@ def build_documents(clauses: List[Dict]) -> List[Document]:
             "chunk_id": clause.get("chunk_id"),
             "heading": clause.get("heading"),
             "categories": clause.get("categories"),
-            "risk_level": clause.get("risk", {}).get("risk_level", "low")
+            "risk_level": clause.get("risk", {}).get("risk_level", "low"),
         }
 
         documents.append(
             Document(
                 page_content=clause.get("text", ""),
-                metadata=metadata
+                metadata=metadata,
             )
         )
 
@@ -31,17 +33,14 @@ def build_documents(clauses: List[Dict]) -> List[Document]:
 
 def create_vectorstore(
     clauses: List[Dict],
-    persist_path: str = "vectorstore/"
+    persist_path: str = "vectorstore/",
 ) -> FAISS:
-    """
-    Create and persist a FAISS vector store from clause chunks.
-    """
     embedding_model = get_embedding_model()
     documents = build_documents(clauses)
 
     vectorstore = FAISS.from_documents(
-        documents,
-        embedding_model
+        documents=documents,
+        embedding=embedding_model,
     )
 
     vectorstore.save_local(persist_path)
@@ -49,10 +48,7 @@ def create_vectorstore(
 
 
 def load_vectorstore(
-    persist_path: str = "vectorstore/"
+    persist_path: str = "vectorstore/",
 ) -> FAISS:
-    """
-    Load an existing FAISS vector store.
-    """
     embedding_model = get_embedding_model()
     return FAISS.load_local(persist_path, embedding_model)
