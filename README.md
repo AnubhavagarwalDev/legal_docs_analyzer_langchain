@@ -63,8 +63,8 @@ A comprehensive web application that leverages generative AI to analyze, simplif
 
 1. **Clone the repository:**
 ```bash
-git clone <repository-url>
-cd complete_project
+git clone https://github.com/AnubhavagarwalDev/legal_docs_analyzer_langchain.git
+cd legal_docs_analyzer_langchain
 ```
 2. **Install dependencies:**
 ```bash
