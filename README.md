@@ -1,4 +1,4 @@
-# GenAI Legal Document Explainer
+# ExplainMyContract
 
 A comprehensive web application that leverages generative AI to analyze, simplify, and extract insights from legal documents (PDFs).
 
