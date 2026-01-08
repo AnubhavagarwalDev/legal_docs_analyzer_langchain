@@ -1,0 +1,27 @@
+# Core dependencies
+Python>=3.9
+
+# Web Framework
+streamlit==1.28.1
+
+# PDF Processing
+pdfplumber==0.10.3
+pdf2image==1.16.3
+pytesseract==0.3.10
+Pillow==10.0.0
+
+# LLM & AI
+langchain==0.1.0
+langchain-core==0.1.0
+langchain-community==0.1.0
+langchain-google-genai==0.0.1
+google-generativeai==0.3.0
+
+# Vector Store & Embeddings
+faiss-cpu==1.7.4
+langchain-huggingface==0.0.1
+sentence-transformers==2.2.2
+
+# Utilities
+python-dotenv==1.0.0
+numpy==1.24.3
