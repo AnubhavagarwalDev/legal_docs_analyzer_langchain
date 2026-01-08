@@ -1,5 +1,5 @@
 from typing import List, Dict
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 
 def retrieve_clauses(
