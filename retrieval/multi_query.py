@@ -1,5 +1,5 @@
 from typing import List, Dict
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from app.config import GEMINI_API_KEY
 
